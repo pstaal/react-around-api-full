@@ -1,10 +1,27 @@
 // models/user.js
 
 const mongoose = require('mongoose');
+const emailValidator = require('validator');
 
 const { linkRegex } = require('../utils/regex');
 // Describe the schema:
 const userSchema = new mongoose.Schema({
+  email: {
+    type: String,
+    required: true,
+    unique: true,
+    validate: {
+      validator(v) {
+        return emailValidator.isEmail(v);
+      },
+      message: 'Sorry. This is not an email address',
+    },
+  },
+  password: {
+    type: String,
+    required: true,
+    minlength: 8
+  },
   name: {
     type: String,
     required: [true, 'a name is required'],

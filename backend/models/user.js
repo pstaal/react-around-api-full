@@ -1,7 +1,7 @@
 // models/user.js
 
 const mongoose = require('mongoose');
-const emailValidator = require('validator');
+const validator = require('validator');
 
 const { linkRegex } = require('../utils/regex');
 // Describe the schema:
@@ -12,7 +12,7 @@ const userSchema = new mongoose.Schema({
     unique: true,
     validate: {
       validator(v) {
-        return emailValidator.isEmail(v);
+        return validator.isEmail(v);
       },
       message: 'Sorry. This is not an email address',
     },
@@ -24,19 +24,19 @@ const userSchema = new mongoose.Schema({
   },
   name: {
     type: String,
-    required: [true, 'a name is required'],
+    default: "Jacques Cousteau",
     minlength: [2, 'the minimum length of a name should be 2 characters'],
     maxlength: [30, 'the maximum length of a name should be 30 characters'],
   },
   about: {
     type: String,
-    required: [true, 'an about is required'],
+    default: "Explorer",
     minlength: [2, 'the minimum length of about should be 2 characters'],
     maxlength: [30, 'the maximum length of about should be 30 characters'],
   },
   avatar: {
     type: String,
-    required: [true, ' a url to an avatar is required'],
+    default: 'https://pictures.s3.yandex.net/resources/avatar_1604080799.jpg',
     validate: {
       validator(v) {
         return linkRegex.test(v);

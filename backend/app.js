@@ -12,6 +12,8 @@ const {
   createUser
 } = require('./controllers/users');
 
+const auth = require('./middleware/auth');
+
 const app = express();
 
 mongoose.connect('mongodb://localhost:27017/aroundb');
@@ -19,16 +21,11 @@ mongoose.connect('mongodb://localhost:27017/aroundb');
 app.use(express.json());
 app.use(helmet());
 
-app.use((req, res, next) => {
-  req.user = {
-    _id: '62bb093728d805edeb12d07d', // paste the _id of the test user created in the previous step
-  };
-
-  next();
-});
-
 app.post('/signin', login);
 app.post('/signup', createUser); 
+
+// authorization
+app.use(auth);
 
 app.use('/cards', cards);
 app.use('/users', users);

@@ -4,41 +4,40 @@ const jwt = require('jsonwebtoken');
 
 const { NODE_ENV, JWT_SECRET } = process.env;
 
-const { findByIdErrorHandler, createOrUpdateErrorHandler, findAllDocumentsErrorHandler } = require('../utils/errorHandlers');
+const NotFoundError = require('../errors/not-found-error');
+const BadRequestError = require('../errors/bad-request-error');
 
 // the getUser request handler
-module.exports.getUser = (req, res) => {
+module.exports.getUser = (req, res, next) => {
   User.findById(req.params.userId)
-    .orFail() // throws a DocumentNotFoundError
+    .orFail(new NotFoundError('No documents were found!')) 
     .then((user) => res.send({ data: user }))
-    .catch((err) => {
-      findByIdErrorHandler(err, res);
-    });
+    .catch(next);
 };
 
 // the getUser request handler
-module.exports.getCurrentUser = (req, res) => {
+module.exports.getCurrentUser = (req, res, next) => {
   User.findById(req.user._id)
-    .orFail() // throws a DocumentNotFoundError
+    .orFail(new NotFoundError('No documents were found!')) 
     .then((user) => res.send({ data: user }))
-    .catch((err) => {
-      findByIdErrorHandler(err, res);
-    });
+    .catch(next);
 };
 
 // the createUser request handler
-module.exports.createUser = (req, res) => {
+module.exports.createUser = (req, res, next) => {
   const { email, password, name, about, avatar } = req.body;
   bcrypt.hash(password, 10)
     .then((hash) => User.create({ email, password: hash, name, about, avatar }))
     .then((user) => res.send({ data: user }))
     .catch((err) => {
-      createOrUpdateErrorHandler(err, res);
+      if (err.name === 'DocumentNotFoundError') return next(new NotFoundError('Could not find the document'));
+      if (err.name === 'ValidatorError') return next(new BadRequestError(err.message));
+      return next(err);
     });
 };
 
 // the login request handler
-module.exports.login = (req, res) => {
+module.exports.login = (req, res, next) => {
   const { email, password } = req.body;
 
   return User.findUserByCredentials(email, password)
@@ -49,26 +48,19 @@ module.exports.login = (req, res) => {
        // we return the token
        res.send({ token });
     })
-    .catch((err) => {
-            // authentication error
-      res
-        .status(401)
-        .send({ message: err.message });
-    });
+    .catch(next);
 }; 
 
 // the getAllUsers request handler
-module.exports.getAllUsers = (req, res) => {
+module.exports.getAllUsers = (req, res, next) => {
   User.find({})
-    .orFail() // throws a DocumentNotFoundError
+    .orFail(new NotFoundError('No documents were found!')) 
     .then((user) => res.send({ data: user }))
-    .catch((err) => {
-      findAllDocumentsErrorHandler(err, res);
-    });
+    .catch(next);
 };
 
 // the updateUser request handler
-module.exports.updateUser = (req, res) => {
+module.exports.updateUser = (req, res, next) => {
   const { name, about } = req.body;
   User.findByIdAndUpdate(
     req.user._id,
@@ -80,15 +72,13 @@ module.exports.updateUser = (req, res) => {
       upsert: false, // if the user entry wasn't found, it will not be created
     },
   )
-    .orFail() // throws a DocumentNotFoundError
+    .orFail(new NotFoundError('No documents were found!')) 
     .then((user) => res.send({ data: user }))
-    .catch((err) => {
-      createOrUpdateErrorHandler(err, res);
-    });
+    .catch(next);
 };
 
 // the updateAvatar request handler
-module.exports.updateAvatar = (req, res) => {
+module.exports.updateAvatar = (req, res, next) => {
   const { avatar } = req.body;
   User.findByIdAndUpdate(
     req.user._id,
@@ -100,9 +90,7 @@ module.exports.updateAvatar = (req, res) => {
       upsert: false, // if the user entry wasn't found, it will not be created
     },
   )
-    .orFail() // throws a DocumentNotFoundError
+    .orFail(new NotFoundError('No documents were found!')) 
     .then((user) => res.send({ data: user }))
-    .catch((err) => {
-      createOrUpdateErrorHandler(err, res);
-    });
+    .catch(next);
 };

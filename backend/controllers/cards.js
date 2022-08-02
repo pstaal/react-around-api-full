@@ -1,62 +1,60 @@
 const Card = require('../models/card');
-const { findByIdErrorHandler, createOrUpdateErrorHandler, findAllDocumentsErrorHandler } = require('../utils/errorHandlers');
+
+const NotFoundError = require('../errors/not-found-error');
+const ForbiddenError = require('../errors/forbidden-error');
+
 
 // the getCards request handler
-module.exports.getCards = (req, res) => {
+module.exports.getCards = (req, res, next) => {
   Card.find({})
-    .orFail() // throws a DocumentNotFoundError
+    .orFail(new NotFoundError('No documents were found!')) 
     .populate(['owner', 'likes'])
     .then((card) => res.send({ data: card }))
-    .catch((err) => {
-      findAllDocumentsErrorHandler(err, res);
-    });
+    .catch(next);
 };
 
 // the createCard request handler
-module.exports.createCard = (req, res) => {
+module.exports.createCard = (req, res, next) => {
   const { name, link } = req.body;
   const { _id } = req.user;
   Card.create({ name, link, owner: _id })
     .then((card) => res.send({ data: card }))
-    .catch((err) => {
-      createOrUpdateErrorHandler(err, res);
-    });
+    .catch(next);
 };
 
 // the deleteCard request handler
-module.exports.deleteCard = (req, res) => {
+module.exports.deleteCard = (req, res, next) => {
   Card.findByIdAndRemove(req.params.cardId)
-    .orFail() // throws a DocumentNotFoundError
-    .then((card) => res.send({ data: card }))
-    .catch((err) => {
-      findByIdErrorHandler(err, res);
-    });
+    .orFail(new NotFoundError('No documents were found!'))
+    .then((card) => {
+      if (card.owner !== req.user._id){
+        return next(new ForbiddenError("You can only delete your own cards"));
+      }
+      res.send({ data: card });
+    })
+    .catch(next);
 };
 
 // the likeCard request handler
-module.exports.likeCard = (req, res) => {
+module.exports.likeCard = (req, res, next) => {
   Card.findByIdAndUpdate(
     req.params.cardId,
     { $addToSet: { likes: req.user._id } }, // add _id to the array if it's not there yet
     { new: true },
   )
-    .orFail() // throws a DocumentNotFoundError
+    .orFail(new NotFoundError('No documents were found!')) 
     .then((card) => res.send({ data: card }))
-    .catch((err) => {
-      findByIdErrorHandler(err, res);
-    });
+    .catch(next);
 };
 
 // the dislikeCard request handler
-module.exports.dislikeCard = (req, res) => {
+module.exports.dislikeCard = (req, res, next) => {
   Card.findByIdAndUpdate(
     req.params.cardId,
     { $pull: { likes: req.user._id } }, // remove _id from the array
     { new: true },
   )
-    .orFail() // throws a DocumentNotFoundError
+    .orFail(new NotFoundError('No documents were found!')) 
     .then((card) => res.send({ data: card }))
-    .catch((err) => {
-      findByIdErrorHandler(err, res);
-    });
+    .catch(next);
 };

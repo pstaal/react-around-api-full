@@ -16,6 +16,16 @@ module.exports.getUser = (req, res) => {
     });
 };
 
+// the getUser request handler
+module.exports.getCurrentUser = (req, res) => {
+  User.findById(req.user)
+    .orFail() // throws a DocumentNotFoundError
+    .then((user) => res.send({ data: user }))
+    .catch((err) => {
+      findByIdErrorHandler(err, res);
+    });
+};
+
 // the createUser request handler
 module.exports.createUser = (req, res) => {
   const { email, password, name, about, avatar } = req.body;

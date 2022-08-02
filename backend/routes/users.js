@@ -3,12 +3,15 @@ const {
   getUser,
   getAllUsers,
   updateUser,
-  updateAvatar
+  updateAvatar,
+  getCurrentUser
 } = require('../controllers/users');
 
 users.get('/', getAllUsers);
 
 users.get('/:userId', getUser);
+
+users.get('/users/me', getCurrentUser);
 
 users.patch('/me', updateUser);
 

@@ -7,6 +7,11 @@ const { PORT = 3000 } = process.env;
 const users = require('./routes/users');
 const cards = require('./routes/cards');
 
+const {
+  login,
+  createUser
+} = require('./controllers/users');
+
 const app = express();
 
 mongoose.connect('mongodb://localhost:27017/aroundb');
@@ -21,6 +26,9 @@ app.use((req, res, next) => {
 
   next();
 });
+
+app.post('/signin', login);
+app.post('/signup', createUser); 
 
 app.use('/cards', cards);
 app.use('/users', users);

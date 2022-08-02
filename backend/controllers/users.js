@@ -45,7 +45,6 @@ module.exports.login = (req, res) => {
         .status(401)
         .send({ message: err.message });
     });
-  
 }; 
 
 // the getAllUsers request handler

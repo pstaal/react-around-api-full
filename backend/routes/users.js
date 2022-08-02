@@ -11,7 +11,7 @@ users.get('/', getAllUsers);
 
 users.get('/:userId', getUser);
 
-users.get('/users/me', getCurrentUser);
+users.get('/me', getCurrentUser);
 
 users.patch('/me', updateUser);
 

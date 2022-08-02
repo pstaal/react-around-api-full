@@ -1,6 +1,7 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const helmet = require('helmet');
+require('dotenv').config(); 
 // listen to port 3000
 const { PORT = 3000 } = process.env;
 const users = require('./routes/users');

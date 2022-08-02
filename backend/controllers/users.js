@@ -1,5 +1,9 @@
 const User = require('../models/user');
 const bcrypt = require('bcryptjs');
+const jwt = require('jsonwebtoken');
+
+const { NODE_ENV, JWT_SECRET } = process.env;
+
 const { findByIdErrorHandler, createOrUpdateErrorHandler, findAllDocumentsErrorHandler } = require('../utils/errorHandlers');
 
 // the getUser request handler
@@ -22,6 +26,27 @@ module.exports.createUser = (req, res) => {
       createOrUpdateErrorHandler(err, res);
     });
 };
+
+// the login request handler
+module.exports.login = (req, res) => {
+  const { email, password } = req.body;
+
+  return User.findUserByCredentials(email, password)
+    .then((user) => {
+       // we're creating a token
+       const token = jwt.sign({ _id: user._id }, NODE_ENV === 'production' ? JWT_SECRET : 'dev-secret', { expiresIn: '7d' });
+
+       // we return the token
+       res.send({ token });
+    })
+    .catch((err) => {
+            // authentication error
+      res
+        .status(401)
+        .send({ message: err.message });
+    });
+  
+}; 
 
 // the getAllUsers request handler
 module.exports.getAllUsers = (req, res) => {

@@ -14,12 +14,17 @@ const {
 
 const { celebrate, Joi, errors } = require('celebrate');
 
+const cors = require('cors');
 
 const auth = require('./middleware/auth');
 
 const app = express();
 
 mongoose.connect('mongodb://localhost:27017/aroundb');
+
+// include these before other routes
+app.use(cors());
+app.options('*', cors()); //enable requests for all routes 
 
 app.use(express.json());
 app.use(helmet());

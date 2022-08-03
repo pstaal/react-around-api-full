@@ -31,9 +31,8 @@ function App() {
     const [currentUser, setCurrentUser] = React.useState('');
     const [cards, setCards] = React.useState([]);
     const [selectedCardId, setSelectedCardId] = React.useState(null);
-    const [loggedIn, setLoggedIn ] = React.useState(false)
+    const [loggedIn, setLoggedIn ] = React.useState(false);
     const [tooltipInfo, setTooltipInfo] = React.useState({text: '', isSuccess: false});
-    const [userMail, setUserMail] = React.useState('');
 
     const history = useHistory();
 
@@ -58,15 +57,6 @@ function App() {
         
         if (localStorage.getItem('jwt')) {
           const jwt = localStorage.getItem('jwt');
-          auth.getContent(jwt).then((res) => {
-            if (res) {
-              setLoggedIn(true);
-              history.push("/");
-              setUserMail(res.data.email);
-            }
-          }).catch((err) => {
-              console.log(err)
-          });
       
         }
       } 
@@ -180,7 +170,7 @@ function App() {
   return (
   <div className="page">
     <CurrentUserContext.Provider value={currentUser}>
-        <Header email={userMail} setEmail={setUserMail}/>
+        <Header email={currentUser.email}/>
         <Switch>
             <Route path="/signup">
                 <Register handleRegister={handleRegister}/>

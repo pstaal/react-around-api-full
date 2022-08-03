@@ -9,7 +9,6 @@ const history = useHistory();
 function onSignOut() {
     localStorage.clear();
     history.push('/signin');
-    props.setEmail('');
 }
 
 return (

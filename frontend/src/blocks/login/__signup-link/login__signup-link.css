@@ -1,0 +1,11 @@
+.login__signup-link {
+    width: 100%;
+    display: block;
+    text-decoration: none;
+    text-align: center;
+    margin: 0;
+    margin-top: 15px;
+    font-size: 14px;
+    line-height: 1.21;
+    color: #fff;
+}

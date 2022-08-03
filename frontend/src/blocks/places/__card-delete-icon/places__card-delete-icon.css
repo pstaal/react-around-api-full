@@ -1,0 +1,10 @@
+.places__card-delete-icon {
+    position: absolute;
+    top: 18px;
+    right: 15px;
+    cursor: pointer;
+}
+
+.places__card-delete-icon:hover {
+    opacity: 0.6;
+}

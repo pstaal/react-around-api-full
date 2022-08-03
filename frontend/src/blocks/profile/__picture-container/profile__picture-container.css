@@ -1,0 +1,19 @@
+.profile__picture-container {
+    border-radius: 50%;
+    width: 127.50px;
+    height: 127.50px;
+    margin: 0 20.6px 0 0;
+    overflow: hidden;
+    position: relative;
+}
+
+@media screen and (max-width: 800px) {
+    .profile__picture-container {
+        margin: 0;
+    }
+}
+
+.profile__picture-container:hover .profile__picture-overlay {
+    opacity: 0.8;
+    cursor: pointer;
+}

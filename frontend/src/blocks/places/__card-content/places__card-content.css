@@ -1,0 +1,8 @@
+.places__card-content {
+    margin: 0;
+    padding: 25px 0 31px 0;
+    color: #000;
+    background-color: #fff;
+    display: flex;
+    align-items: center;
+}

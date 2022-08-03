@@ -1,0 +1,10 @@
+.header__email {
+    margin: 0;
+    padding: 0;
+    display: flex;
+    align-self: flex-end;
+    font-weight: 500;
+    line-height: 1.22;
+    font-size: 18px;
+    margin-right: 24px;
+}

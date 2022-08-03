@@ -1,0 +1,11 @@
+.login__title {
+    width: 100%;
+    text-align: center;
+    font-weight: 900;
+    font-size: 24px;
+    line-height: 1.2;
+    margin: 0;
+    padding: 0;
+    margin-top: 60px;
+    margin-bottom: 50px;
+}

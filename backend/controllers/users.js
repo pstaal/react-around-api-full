@@ -12,7 +12,12 @@ module.exports.getUser = (req, res, next) => {
   User.findById(req.params.userId)
     .orFail(new NotFoundError('No documents were found!')) 
     .then((user) => res.send({ data: user }))
-    .catch(next);
+    .catch((err) => {
+      if (err.name === 'CastError') {
+        next(new BadRequestError("This is not a valid ID"));
+      }
+      next(err);
+    });
 };
 
 // the getUser request handler
@@ -20,7 +25,12 @@ module.exports.getCurrentUser = (req, res, next) => {
   User.findById(req.user._id)
     .orFail(new NotFoundError('No documents were found!')) 
     .then((user) => res.send({ data: user }))
-    .catch(next);
+    .catch((err) => {
+      if (err.name === 'CastError') {
+        next(new BadRequestError("This is not a valid ID"));
+      }
+      next(err);
+    });
 };
 
 // the createUser request handler
@@ -32,7 +42,10 @@ module.exports.createUser = (req, res, next) => {
     .catch((err) => {
       if (err.name === 'DocumentNotFoundError') return next(new NotFoundError('Could not find the document'));
       if (err.name === 'ValidatorError') return next(new BadRequestError(err.message));
-      return next(err);
+      if (err.name === 'ValidationError') {
+        return next(new BadRequestError(`${Object.values(err.errors).map((error) => error.message).join(', ')}`));
+      }
+      next(err);
     });
 };
 
@@ -74,7 +87,15 @@ module.exports.updateUser = (req, res, next) => {
   )
     .orFail(new NotFoundError('No documents were found!')) 
     .then((user) => res.send({ data: user }))
-    .catch(next);
+    .catch((err) => {
+      if (err.name === 'ValidationError') {
+        next(new BadRequestError(`${Object.values(err.errors).map((error) => error.message).join(', ')}`));
+      }
+      if (err.name === "ValidatorError") {
+        next(new BadRequestError(err.message));
+      }
+      next(err);
+    });
 };
 
 // the updateAvatar request handler
@@ -92,5 +113,16 @@ module.exports.updateAvatar = (req, res, next) => {
   )
     .orFail(new NotFoundError('No documents were found!')) 
     .then((user) => res.send({ data: user }))
-    .catch(next);
+    .catch((err) => {
+      if (err.name === 'ValidationError') {
+        next(new BadRequestError(`${Object.values(err.errors).map((error) => error.message).join(', ')}`));
+      }
+      if (err.name === 'CastError') {
+        next(new BadRequestError("This is not a valid ID"));
+      }
+      if (err.name === "ValidatorError") {
+        next(new BadRequestError(err.message));
+      }
+      next(err);
+    });
 };

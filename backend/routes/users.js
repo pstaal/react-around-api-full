@@ -7,14 +7,30 @@ const {
   getCurrentUser
 } = require('../controllers/users');
 
+const { celebrate, Joi } = require('celebrate');
+
 users.get('/', getAllUsers);
 
-users.get('/:userId', getUser);
+users.get('/:userId', 
+  celebrate({
+    params: Joi.object().keys({
+    userId: Joi.string().alphanum().required(),
+  }), 
+  }), getUser);
 
 users.get('/me', getCurrentUser);
 
-users.patch('/me', updateUser);
+users.patch('/me', celebrate({
+  body: Joi.object().keys({
+  name: Joi.string().required(),
+  about: Joi.string().required(),
+}), 
+}), updateUser);
 
-users.patch('/me/avatar', updateAvatar);
+users.patch('/me/avatar', celebrate({
+  body: Joi.object().keys({
+  avatar: Joi.string().required(),
+}), 
+}), updateAvatar);
 
 module.exports = users;

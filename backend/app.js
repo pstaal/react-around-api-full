@@ -12,6 +12,9 @@ const {
   createUser
 } = require('./controllers/users');
 
+const { celebrate, Joi, errors } = require('celebrate');
+
+
 const auth = require('./middleware/auth');
 
 const app = express();
@@ -21,8 +24,19 @@ mongoose.connect('mongodb://localhost:27017/aroundb');
 app.use(express.json());
 app.use(helmet());
 
-app.post('/signin', login);
-app.post('/signup', createUser); 
+app.post('/signin', celebrate({
+  body: Joi.object().keys({
+  email: Joi.string().required(),
+  password: Joi.string().required(),
+}), 
+}), login);
+
+app.post('/signup', celebrate({
+  body: Joi.object().keys({
+  email: Joi.string().required(),
+  password: Joi.string().required(),
+}), 
+}), createUser); 
 
 // authorization
 app.use(auth);
@@ -34,6 +48,10 @@ app.get('*', (req, res) => {
   res.setHeader('Content-Type', 'application/json');
   res.send({ message: 'Requested resource not found' }, 404);
 });
+
+
+//errors from celebrate
+app.use(errors());
 
 //error middleware
 app.use((err, req, res, next) => {

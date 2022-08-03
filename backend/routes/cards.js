@@ -7,14 +7,33 @@ const {
   dislikeCard,
 } = require('../controllers/cards');
 
+const { celebrate, Joi } = require('celebrate');
+
 cards.get('/', getCards);
 
-cards.post('/', createCard);
+cards.post('/', celebrate({
+  body: Joi.object().keys({
+  name: Joi.string().required(),
+  link: Joi.string().required(),
+}), 
+}), createCard);
 
-cards.delete('/:cardId', deleteCard);
+cards.delete('/:cardId', celebrate({
+  params: Joi.object().keys({
+  cardId: Joi.string().alphanum().required(),
+}).unknown(true), 
+}), deleteCard);
 
-cards.put('/:cardId/likes', likeCard);
+cards.put('/:cardId/likes', celebrate({
+  params: Joi.object().keys({
+  cardId: Joi.string().alphanum().required(),
+}).unknown(true), 
+}), likeCard);
 
-cards.delete('/:cardId/likes', dislikeCard);
+cards.delete('/:cardId/likes', celebrate({
+  params: Joi.object().keys({
+  cardId: Joi.string().alphanum().required(),
+}).unknown(true), 
+}), dislikeCard);
 
 module.exports = cards;

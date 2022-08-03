@@ -11,24 +11,26 @@ class Api {
         return res.ok ? res.json() : Promise.reject(`Error: ${res.status}`);
       }
 
-      initialize() {
+      initialize(token) {
         return Promise.all([
-          this.getInitialUser(),
-          this.getInitialCards()
+          this.getInitialUser(token),
+          this.getInitialCards(token)
         ]);
       }
     
-      getInitialCards() {
+      getInitialCards(token) {
             return fetch(`${this._baseUrl}/cards`, {
-              headers: this._headers
-            })
+              headers: { ...this._headers,
+                authorization: `Bearer ${token}`,
+            }})
             .then(res => this._handleResponse(res)); 
       }
 
-      getInitialUser() {
+      getInitialUser(token) {
             return fetch(`${this._baseUrl}/users/me`, {
-              headers: this._headers
-            })
+              headers: { ...this._headers,
+                authorization: `Bearer ${token}`,
+            }})
             .then(res => this._handleResponse(res)); 
       }
 
@@ -91,7 +93,6 @@ class Api {
 const api = new Api({
   baseUrl: "https://around.nomoreparties.co/v1/group-12",
   headers: {
-    authorization: "5ad7ef92-ff2d-4fbe-9e41-f5034926c435",
     "Content-Type": "application/json"
   }
 }); 

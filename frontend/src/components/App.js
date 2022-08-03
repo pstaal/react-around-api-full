@@ -33,30 +33,28 @@ function App() {
     const [selectedCardId, setSelectedCardId] = React.useState(null);
     const [loggedIn, setLoggedIn ] = React.useState(false);
     const [tooltipInfo, setTooltipInfo] = React.useState({text: '', isSuccess: false});
+    const [token, setToken ] = React.useState(localStorage.getItem('jwt'));
 
     const history = useHistory();
 
     React.useEffect(() => {
-        api.getInitialUser().then((data) => {
-            setCurrentUser(data);
-        }).catch((err) => {
-            console.log(err); // log the error to the console
-        });
-
-        api.getInitialCards().then((data) => {
-            setCards([...cards, ...data]);
-        }).catch((err) => {
-            console.log(err); // log the error to the console
-        });
 
         tokenCheck();
 
-    },[]);
+    },[loggedIn]);
 
     function tokenCheck() {
-        
-        if (localStorage.getItem('jwt')) {
-          const jwt = localStorage.getItem('jwt');
+        if (token) {
+            api.initialize(token).then((startDataArray) => {
+                if (startDataArray) {
+                  setLoggedIn(true);
+                  history.push("/");
+                  setCurrentUser(startDataArray[0]);
+                  setCards(startDataArray[1]);
+                }
+              }).catch((err) => {
+                  console.log(err)
+              });
       
         }
       } 

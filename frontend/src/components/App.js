@@ -37,8 +37,6 @@ function App() {
 
     const history = useHistory();
 
-    console.log(token);
-
     const tokenCheck = React.useCallback(function () {
         if (token) {
             api.initialize(token).then((startDataArray) => {
@@ -74,6 +72,8 @@ function App() {
     }
 
     function handleAddPlaceSubmit(cardObject, token){
+        console.log(cardObject);
+        console.log(token);
         api.addCart(cardObject, token).then((newCard) => {
             setCards([newCard.data, ...cards]); 
             closeAllPopups();
@@ -188,7 +188,7 @@ function App() {
         </Switch>
         { loggedIn && <Footer />}
         <EditProfilePopup token={token} onClose={closeAllPopups} isOpen={isEditProfilePopupOpen} onUpdateUser={handleUpdateUser}/>
-        <AddPlacePopup onClose={closeAllPopups} isOpen={isAddPlacePopupOpen} onAddPlaceSubmit={handleAddPlaceSubmit}/>
+        <AddPlacePopup token={token} onClose={closeAllPopups} isOpen={isAddPlacePopupOpen} onAddPlaceSubmit={handleAddPlaceSubmit}/>
         <EditAvatarPopup token={token} onClose={closeAllPopups} isOpen={isEditAvatarPopupOpen} onUpdateAvatar={handleUpdateAvatar}/>
         <ImagePopup card={selectedCard} onClose={closeAllPopups}/>
         <ConfirmDeletePopup token={token} isOpen={isConfirmDeletePopupOpen} cardId={selectedCardId} onClose={closeAllPopups} onDelete={handleCardDelete}/>

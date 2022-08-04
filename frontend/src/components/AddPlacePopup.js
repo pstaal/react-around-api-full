@@ -32,7 +32,7 @@ function AddPlacePopup(props) {
         e.preventDefault();
       
         // Pass the values of the managed components to the external handler
-        props.onAddPlaceSubmit({ title, link });
+        props.onAddPlaceSubmit({ title, link }, props.token);
 
       } 
 

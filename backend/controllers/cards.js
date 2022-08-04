@@ -8,7 +8,6 @@ const BadRequestError = require('../errors/bad-request-error');
 // the getCards request handler
 module.exports.getCards = (req, res, next) => {
   Card.find({})
-    .orFail(new NotFoundError('No documents were found!')) 
     .populate(['owner', 'likes'])
     .then((card) => res.send({ data: card }))
     .catch(next);

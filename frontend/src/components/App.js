@@ -161,6 +161,7 @@ function App() {
         .then((res) => {
             setLoggedIn(true);
             history.push("/");
+            setToken(res.token);
             tokenCheck();
         }).catch((err) => {
             setTooltipInfo({text: 'Oops, something went wrong. Please try again', isSuccess: false});

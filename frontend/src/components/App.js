@@ -174,7 +174,7 @@ function App() {
   <div className="page">
     <CurrentUserContext.Provider value={currentUser}>
         <Header email={currentUser.email} logoutFunction={() => { setLoggedIn(false)
-            setToken(null)
+            setToken(null); setCurrentUser('');
         }}/>
         <Switch>
             <Route path="/signup">

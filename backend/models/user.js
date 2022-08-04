@@ -2,6 +2,7 @@
 
 const mongoose = require('mongoose');
 const validator = require('validator');
+const bcrypt = require('bcrypt');
 
 const { linkRegex } = require('../utils/regex');
 // Describe the schema:

@@ -36,7 +36,7 @@ module.exports.deleteCard = (req, res, next) => {
   Card.findByIdAndRemove(req.params.cardId)
     .orFail(new NotFoundError('No documents were found!'))
     .then((card) => {
-      if (card.owner !== req.user._id){
+      if (card.owner._id.toString() !== req.user._id){
         return next(new ForbiddenError("You can only delete your own cards"));
       }
       res.send({ data: card });

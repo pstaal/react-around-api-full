@@ -20,7 +20,7 @@ function EditAvatarPopup(props) {
         // Pass the values of the managed components to the external handler
         props.onUpdateAvatar({
           avatar: avatarRef.current.value
-        });
+        }, props.token);
 
       } 
 

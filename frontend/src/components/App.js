@@ -37,30 +37,34 @@ function App() {
 
     const history = useHistory();
 
-    React.useEffect(() => {
+    console.log(token);
 
-        tokenCheck();
-
-    },[loggedIn]);
-
-    function tokenCheck() {
+    const tokenCheck = React.useCallback(function () {
         if (token) {
             api.initialize(token).then((startDataArray) => {
                 if (startDataArray) {
                   setLoggedIn(true);
                   history.push("/");
-                  setCurrentUser(startDataArray[0]);
-                  setCards(startDataArray[1]);
+                  setCurrentUser(startDataArray[0].data);
+                  setCards(startDataArray[1].data);
                 }
               }).catch((err) => {
                   console.log(err)
               });
       
         }
-      } 
+    },[history, token]);
 
-    function handleCardDelete(CardId) {
-        api.deleteCard(CardId).then((res) => {
+    React.useEffect(() => {
+
+        tokenCheck();
+
+    },[loggedIn, tokenCheck, token]);
+
+   
+  
+    function handleCardDelete(CardId, token) {
+        api.deleteCard(CardId, token).then((res) => {
             setCards(cards.filter(card => card._id !== CardId));
             setSelectedCardId(null);
             closeAllPopups();
@@ -69,9 +73,9 @@ function App() {
         });
     }
 
-    function handleAddPlaceSubmit(cardObject){
-        api.addCart(cardObject).then((newCard) => {
-            setCards([newCard, ...cards]); 
+    function handleAddPlaceSubmit(cardObject, token){
+        api.addCart(cardObject, token).then((newCard) => {
+            setCards([newCard.data, ...cards]); 
             closeAllPopups();
         }).catch((err) => {
             console.log(err); // log the error to the console
@@ -122,18 +126,18 @@ function App() {
         setSelectedCard({isOpen: false, link: '', title: ''});
     }
 
-    function handleUpdateUser(user) {
-        api.setNewUser(user).then((data) => {
-            setCurrentUser(data);
+    function handleUpdateUser(user, token) {
+        api.setNewUser(user, token).then((res) => {
+            setCurrentUser(res.data);
             closeAllPopups();
         }).catch((err) => {
             console.log(err); // log the error to the console
         });
     }
 
-    function handleUpdateAvatar(avatarObject) {
-        api.changePicture(avatarObject).then((data) => {
-            setCurrentUser(data); 
+    function handleUpdateAvatar(avatarObject, token) {
+        api.changePicture(avatarObject, token).then((res) => {
+            setCurrentUser(res.data); 
             closeAllPopups();
         }).catch((err) => {
             console.log(err); // log the error to the console
@@ -168,7 +172,9 @@ function App() {
   return (
   <div className="page">
     <CurrentUserContext.Provider value={currentUser}>
-        <Header email={currentUser.email}/>
+        <Header email={currentUser.email} logoutFunction={() => { setLoggedIn(false)
+            setToken(null)
+        }}/>
         <Switch>
             <Route path="/signup">
                 <Register handleRegister={handleRegister}/>
@@ -181,11 +187,11 @@ function App() {
             </ProtectedRoute>
         </Switch>
         { loggedIn && <Footer />}
-        <EditProfilePopup onClose={closeAllPopups} isOpen={isEditProfilePopupOpen} onUpdateUser={handleUpdateUser}/>
+        <EditProfilePopup token={token} onClose={closeAllPopups} isOpen={isEditProfilePopupOpen} onUpdateUser={handleUpdateUser}/>
         <AddPlacePopup onClose={closeAllPopups} isOpen={isAddPlacePopupOpen} onAddPlaceSubmit={handleAddPlaceSubmit}/>
-        <EditAvatarPopup onClose={closeAllPopups} isOpen={isEditAvatarPopupOpen} onUpdateAvatar={handleUpdateAvatar}/>
+        <EditAvatarPopup token={token} onClose={closeAllPopups} isOpen={isEditAvatarPopupOpen} onUpdateAvatar={handleUpdateAvatar}/>
         <ImagePopup card={selectedCard} onClose={closeAllPopups}/>
-        <ConfirmDeletePopup isOpen={isConfirmDeletePopupOpen} cardId={selectedCardId} onClose={closeAllPopups} onDelete={handleCardDelete}/>
+        <ConfirmDeletePopup token={token} isOpen={isConfirmDeletePopupOpen} cardId={selectedCardId} onClose={closeAllPopups} onDelete={handleCardDelete}/>
         <InfoTooltip isOpen={isTooltipOpen} onClose={closeAllPopups} text={tooltipInfo.text} isSuccess={tooltipInfo.isSuccess} />
     </CurrentUserContext.Provider>
   </div>

@@ -46,7 +46,7 @@ function EditProfilePopup(props) {
         props.onUpdateUser({
           userName: name,
           userJob: description
-        });
+        }, props.token);
 
       } 
 

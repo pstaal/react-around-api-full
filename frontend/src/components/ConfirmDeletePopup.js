@@ -2,7 +2,7 @@ function ConfirmDeletePopup(props) {
     
 
     function handleDelete() {
-        props.onDelete(props.cardId);
+        props.onDelete(props.cardId, props.token);
     }
 
 

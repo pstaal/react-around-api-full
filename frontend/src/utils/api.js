@@ -35,10 +35,12 @@ class Api {
       }
 
 
-      addCart({title, link}){
+      addCart({title, link}, token){
         return fetch(`${this._baseUrl}/cards`, {
           method: "POST",
-          headers: this._headers,
+          headers: { ...this._headers,
+            authorization: `Bearer ${token}`,
+        },
           body: JSON.stringify({
             name: title,
             link
@@ -48,10 +50,12 @@ class Api {
      }
 
 
-     deleteCard(id) {
+     deleteCard(id, token) {
       return fetch(`${this._baseUrl}/cards/${id}`, {
         method: "DELETE",
-        headers: this._headers
+        headers: { ...this._headers,
+          authorization: `Bearer ${token}`,
+        }
       })
       .then(res => this._handleResponse(res)); 
      }
@@ -64,10 +68,12 @@ class Api {
         .then(res => this._handleResponse(res)); 
      }
 
-     changePicture({avatar}){
+     changePicture({avatar}, token){
       return fetch(`${this._baseUrl}/users/me/avatar`, {
           method: "PATCH",
-          headers: this._headers,
+          headers: { ...this._headers,
+            authorization: `Bearer ${token}`,
+          },
           body: JSON.stringify({
             avatar
           })
@@ -75,10 +81,12 @@ class Api {
         .then(res => this._handleResponse(res)); 
       }
 
-      setNewUser({userName, userJob}) { 
+      setNewUser({userName, userJob}, token) { 
         return fetch(`${this._baseUrl}/users/me`, {
             method: "PATCH",
-            headers: this._headers,
+            headers: { ...this._headers,
+              authorization: `Bearer ${token}`,
+            },
             body: JSON.stringify({
               name: userName,
               about: userJob
@@ -91,7 +99,7 @@ class Api {
 
 //initalize api instance
 const api = new Api({
-  baseUrl: "https://around.nomoreparties.co/v1/group-12",
+  baseUrl: "http://localhost:3000",
   headers: {
     "Content-Type": "application/json"
   }

@@ -8,8 +8,9 @@ const NotFoundError = require('../errors/not-found-error');
 const BadRequestError = require('../errors/bad-request-error');
 
 // the getUser request handler
-module.exports.getUser = (req, res, next) => {
-  User.findById(req.params.userId)
+getUser = (req, res, next) => {
+  const id = (req.params.id ? req.params.id : req.user._id);
+  User.findById(id)
     .orFail(new NotFoundError('No documents were found!')) 
     .then((user) => res.send({ data: user }))
     .catch((err) => {
@@ -21,20 +22,12 @@ module.exports.getUser = (req, res, next) => {
 };
 
 // the getUser request handler
-module.exports.getCurrentUser = (req, res, next) => {
-  User.findById(req.user._id)
-    .orFail(new NotFoundError('No documents were found!')) 
-    .then((user) => res.send({ data: user }))
-    .catch((err) => {
-      if (err.name === 'CastError') {
-        next(new BadRequestError("This is not a valid ID"));
-      }
-      next(err);
-    });
+getCurrentUser = (req, res, next) => {
+  getUser(req, res, next);
 };
 
 // the createUser request handler
-module.exports.createUser = (req, res, next) => {
+createUser = (req, res, next) => {
   const { email, password, name, about, avatar } = req.body;
   bcrypt.hash(password, 10)
     .then((hash) => User.create({ email, password: hash, name, about, avatar }))
@@ -50,7 +43,7 @@ module.exports.createUser = (req, res, next) => {
 };
 
 // the login request handler
-module.exports.login = (req, res, next) => {
+login = (req, res, next) => {
   const { email, password } = req.body;
 
   return User.findUserByCredentials(email, password)
@@ -65,7 +58,7 @@ module.exports.login = (req, res, next) => {
 }; 
 
 // the getAllUsers request handler
-module.exports.getAllUsers = (req, res, next) => {
+getAllUsers = (req, res, next) => {
   User.find({})
     .orFail(new NotFoundError('No documents were found!')) 
     .then((user) => res.send({ data: user }))
@@ -73,7 +66,7 @@ module.exports.getAllUsers = (req, res, next) => {
 };
 
 // the updateUser request handler
-module.exports.updateUser = (req, res, next) => {
+updateUser = (req, res, next) => {
   const { name, about } = req.body;
   User.findByIdAndUpdate(
     req.user._id,
@@ -99,7 +92,7 @@ module.exports.updateUser = (req, res, next) => {
 };
 
 // the updateAvatar request handler
-module.exports.updateAvatar = (req, res, next) => {
+updateAvatar = (req, res, next) => {
   const { avatar } = req.body;
   User.findByIdAndUpdate(
     req.user._id,
@@ -126,3 +119,13 @@ module.exports.updateAvatar = (req, res, next) => {
       next(err);
     });
 };
+
+module.exports = {
+  getUser,
+  getCurrentUser,
+  createUser,
+  login,
+  getAllUsers,
+  updateUser,
+  updateAvatar
+}

@@ -1,4 +1,8 @@
 const cards = require('express').Router();
+
+const { celebrate, Joi } = require('celebrate');
+const validateURL = require('../utils/validateURL');
+
 const {
   getCards,
   createCard,
@@ -7,14 +11,15 @@ const {
   dislikeCard,
 } = require('../controllers/cards');
 
-const { celebrate, Joi } = require('celebrate');
+
+
 
 cards.get('/', getCards);
 
 cards.post('/', celebrate({
   body: Joi.object().keys({
   name: Joi.string().required(),
-  link: Joi.string().required(),
+  link: Joi.string().required().custom(validateURL),
 }), 
 }), createCard);
 

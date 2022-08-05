@@ -7,6 +7,8 @@ const { PORT = 3000 } = process.env;
 const users = require('./routes/users');
 const cards = require('./routes/cards');
 
+const { requestLogger, errorLogger } = require('./middleware/logger'); 
+
 const {
   login,
   createUser
@@ -28,6 +30,8 @@ app.options('*', cors()); //enable requests for all routes
 
 app.use(express.json());
 app.use(helmet());
+
+app.use(requestLogger); // enabling the request logger
 
 app.post('/signin', celebrate({
   body: Joi.object().keys({
@@ -54,6 +58,7 @@ app.get('*', (req, res) => {
   res.send({ message: 'Requested resource not found' }, 404);
 });
 
+app.use(errorLogger); // enabling the error logger
 
 //errors from celebrate
 app.use(errors());

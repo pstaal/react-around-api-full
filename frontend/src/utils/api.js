@@ -60,10 +60,12 @@ class Api {
       .then(res => this._handleResponse(res)); 
      }
 
-     toggleLike(id, isLiked) {
-        return fetch(`${this._baseUrl}/cards/likes/${id}`, {
+     toggleLike(id, isLiked, token) {
+        return fetch(`${this._baseUrl}/cards/${id}/likes`, {
           method: isLiked ? "DELETE" : "PUT",
-          headers: this._headers
+          headers:  { ...this._headers,
+            authorization: `Bearer ${token}`,
+          }
         })
         .then(res => this._handleResponse(res)); 
      }

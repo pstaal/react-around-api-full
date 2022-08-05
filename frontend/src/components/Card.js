@@ -11,9 +11,8 @@ function Card(props) {
       }  
     
       function handleLikeClick() {
-        props.onCardLike(props.card);
+        props.onCardLike(props.card, props.token);
       }
-
         // Checking if the current user is the owner of the current card
         const isOwn = props.card.owner._id === currentUser._id;
 

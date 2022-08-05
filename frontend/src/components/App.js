@@ -72,8 +72,6 @@ function App() {
     }
 
     function handleAddPlaceSubmit(cardObject, token){
-        console.log(cardObject);
-        console.log(token);
         api.addCart(cardObject, token).then((newCard) => {
             setCards([newCard.data, ...cards]); 
             closeAllPopups();
@@ -83,13 +81,13 @@ function App() {
 
     }
 
-    function handleCardLike(card) {
+    function handleCardLike(card, token) {
         // Check one more time if this card was already liked
         const isLiked = card.likes.some(user => user._id === currentUser._id);
         
         // Send a request to the API and getting the updated card data
-        api.toggleLike(card._id, isLiked).then((newCard) => {
-            setCards((state) => state.map((currentCard) => currentCard._id === card._id ? newCard : currentCard));
+        api.toggleLike(card._id, isLiked, token).then((newCard) => {
+            setCards((state) => state.map((currentCard) => currentCard._id === card._id ? newCard.data : currentCard));
         }).catch((err) => {
             console.log(err); // log the error to the console
         });
@@ -184,7 +182,7 @@ function App() {
                 <Login  handleLogin={handleLogin}/>
             </Route>
             <ProtectedRoute path="/" loggedIn={loggedIn}>
-                <Main cards={cards} onCardLike={handleCardLike} onCardDelete={handleCardDelete} onConfirm={handleConfirmation} onCardClick={handleCardClick} onEditProfileClick={handleEditProfileClick} onAddPlaceClick={handleAddPlaceClick} onEditAvatarClick={handleEditAvatarClick}/>
+                <Main token={token} cards={cards} onCardLike={handleCardLike} onCardDelete={handleCardDelete} onConfirm={handleConfirmation} onCardClick={handleCardClick} onEditProfileClick={handleEditProfileClick} onAddPlaceClick={handleAddPlaceClick} onEditAvatarClick={handleEditAvatarClick}/>
             </ProtectedRoute>
         </Switch>
         { loggedIn && <Footer />}

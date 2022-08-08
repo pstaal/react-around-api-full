@@ -1,5 +1,5 @@
 const users = require('express').Router();
-const validateURL = require('../utils/validateURL');
+const { validateURL } = require('../utils/validateURL');
 const { celebrate, Joi } = require('celebrate');
 
 const {

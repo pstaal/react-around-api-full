@@ -15,8 +15,6 @@ function Card(props) {
       }
         // Checking if the current user is the owner of the current card
         const isOwn = props.card.owner._id === currentUser._id;
-        console.log(props.card.owner);
-        console.log(currentUser);
 
         // Creating a variable which you'll then set in `className` for the delete button
         const cardDeleteButtonClassName = (

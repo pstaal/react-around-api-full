@@ -74,6 +74,7 @@ module.exports.dislikeCard = (req, res, next) => {
     { new: true },
   )
     .orFail(new NotFoundError('No documents were found!')) 
+    .populate(['owner', 'likes'])
     .then((card) => res.send({ data: card }))
     .catch((err) => {
       if (err.name === 'CastError') {

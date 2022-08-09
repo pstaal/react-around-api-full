@@ -6,6 +6,7 @@ const { NODE_ENV, JWT_SECRET } = process.env;
 
 const NotFoundError = require('../errors/not-found-error');
 const BadRequestError = require('../errors/bad-request-error');
+const ConflictError = require('../errors/conflict-error');
 
 // the getUser request handler
 getUser = (req, res, next) => {
@@ -31,9 +32,10 @@ createUser = (req, res, next) => {
   const { email, password, name, about, avatar } = req.body;
   bcrypt.hash(password, 10)
     .then((hash) => User.create({ email, password: hash, name, about, avatar }))
-    .then((user) => res.send({ data: user }))
+    .then((user) => res.send({ data: {email: user.email, name: user.name, about: user.about, avatar: user.avatar, _id: user._id}}))
     .catch((err) => {
       if (err.name === 'DocumentNotFoundError') return next(new NotFoundError('Could not find the document'));
+      if (err.name === 'MongoServerError') return next(new ConflictError('This email is already in use'));
       if (err.name === 'ValidatorError') return next(new BadRequestError(err.message));
       if (err.name === 'ValidationError') {
         return next(new BadRequestError(`${Object.values(err.errors).map((error) => error.message).join(', ')}`));

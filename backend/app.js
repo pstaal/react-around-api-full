@@ -16,9 +16,12 @@ const {
 
 const { celebrate, Joi, errors } = require('celebrate');
 
+const { NotFoundError } = require('./errors/not-found-error');
+
 const cors = require('cors');
 
 const auth = require('./middleware/auth');
+const errorMiddleware = require('./middleware/errorMiddleware');
 
 const app = express();
 
@@ -53,9 +56,8 @@ app.use(auth);
 app.use('/cards', cards);
 app.use('/users', users);
 
-app.get('*', (req, res) => {
-  res.setHeader('Content-Type', 'application/json');
-  res.send({ message: 'Requested resource not found' }, 404);
+app.get('*', (req, res, next) => {
+  next(new NotFoundError('This page does not exist'));
 });
 
 app.use(errorLogger); // enabling the error logger
@@ -64,18 +66,7 @@ app.use(errorLogger); // enabling the error logger
 app.use(errors());
 
 //error middleware
-app.use((err, req, res, next) => {
-  // if an error has no status, display 500
-  const { statusCode = 500, message } = err;
-  res
-    .status(statusCode)
-    .send({
-      // check the status and display a message based on it
-      message: statusCode === 500
-        ? 'An error occurred on the server'
-        : message
-    });
-}); 
+app.use(errorMiddleware); 
 
 app.listen(PORT, () => {
   console.log(`App listening at port ${PORT}`);

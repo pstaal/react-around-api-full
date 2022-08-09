@@ -101,7 +101,7 @@ class Api {
 
 //initalize api instance
 const api = new Api({
-  baseUrl: "http://localhost:3000",
+  baseUrl: process.env.NODE_ENV === "production" ? 'https://api.peterstaal.students.nomoredomainssbs.ru' : 'http://localhost:3000',
   headers: {
     "Content-Type": "application/json"
   }
